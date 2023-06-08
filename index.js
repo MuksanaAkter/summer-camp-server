@@ -33,6 +33,7 @@ async function run() {
     const classCollection = database.collection("classes");
 
      const instructorCollection =client.db("musicdb").collection("instructor");
+     const enrollCollection = client.db("musicdb").collection("enrolls");
 
     app.get("/classes", async (req, res) => {
         const result = await classCollection
@@ -50,7 +51,29 @@ async function run() {
         res.send(result);
       });
 
+      // enroll collection apis
+    app.get('/enrolls', async (req, res) => {
+        const email = req.query.email;
+  
+        if (!email) {
+          res.send([]);
+        }
+  
+        // const decodedEmail = req.decoded.email;
+        // if (email !== decodedEmail) {
+        //   return res.status(403).send({ error: true, message: 'porviden access' })
+        // }
+  
+        const query = { email: email };
+        const result = await enrollCollection.find(query).toArray();
+        res.send(result);
+      });
 
+      app.post('/enrolls', async (req, res) => {
+        const item = req.body;
+        const result = await enrollCollection.insertOne(item);
+        res.send(result);
+      })
 
  // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
