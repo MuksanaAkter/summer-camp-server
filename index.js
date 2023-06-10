@@ -164,9 +164,18 @@ async function run() {
     
     app.post('/classes', async (req, res) => {
       const newItem = req.body;
-      const result = await menuCollection.insertOne(newItem)
+      const result = await classCollection.insertOne(newItem)
       res.send(result);
     })
+
+    app.post("/addclass", async (req, res) => {
+      const body = req.body;
+      body.createdAt = new Date();
+      console.log(body);
+      const result = await classCollection.insertOne(body);
+      console.log(result);
+      res.send(result);
+    });
 
     app.get("/instructors", async (req, res) => {
       const result = await instructorCollection
