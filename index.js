@@ -54,11 +54,12 @@ async function run() {
 
     const instructorCollection = client.db("musicdb").collection("instructor");
     const enrollCollection = client.db("musicdb").collection("enrolls");
+    const paymentCollection = client.db("musicdb").collection("payments");
 
     app.post("/jwt", (req, res) => {
       const user = req.body;
       const token = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET, {
-        expiresIn: "1h",
+        expiresIn: "4h",
       });
 
       res.send({ token });
@@ -224,6 +225,33 @@ async function run() {
       const result = await enrollCollection.deleteOne(query);
       res.send(result);
     });
+
+     // create payment intent
+     app.post('/create-payment-intent', async (req, res) => {
+      const { price } = req.body;
+      const amount = parseInt(price * 100);
+      const paymentIntent = await stripe.paymentIntents.create({
+        amount: amount,
+        currency: 'usd',
+        payment_method_types: ['card']
+      });
+
+      res.send({
+        clientSecret: paymentIntent.client_secret
+      })
+    })
+
+
+    // payment related api
+    app.post('/payments', async (req, res) => {
+      const payment = req.body;
+      const insertResult = await paymentCollection.insertOne(payment);
+
+      const query = { _id: { $in: payment.cartItems.map(id => new ObjectId(id)) } }
+      const deleteResult = await classCollection.deleteMany(query)
+
+      res.send({ insertResult, deleteResult });
+    })
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
