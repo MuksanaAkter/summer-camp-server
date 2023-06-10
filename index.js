@@ -3,7 +3,7 @@ const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
 const app = express();
-const port = process.env.PORT || 5000;
+const port = process.env.PORT || 4000;
 var jwt = require("jsonwebtoken");
 
 // middleware
@@ -167,6 +167,13 @@ async function run() {
       const result = await classCollection.insertOne(newItem)
       res.send(result);
     })
+
+    app.delete("/classes/:id", async (req, res) => {
+      const id = req.params.id;
+      const query = { _id: new ObjectId(id) };
+      const result = await classCollection.deleteOne(query);
+      res.send(result);
+    });
 
     app.post("/addclass", async (req, res) => {
       const body = req.body;
