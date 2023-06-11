@@ -2,6 +2,7 @@ const express = require("express");
 const cors = require("cors");
 const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 require("dotenv").config();
+const stripe = require('stripe')(process.env.PAYMENT_SECRET_KEY)
 const app = express();
 const port = process.env.PORT || 4000;
 var jwt = require("jsonwebtoken");
@@ -212,7 +213,7 @@ async function run() {
       if (email !== decodedEmail) {
         return res
           .status(403)
-          .send({ error: true, message: "Forbiden access" });
+          .send({ error: true, message: "Forbidden access" });
       }
 
       const query = { email: email };
