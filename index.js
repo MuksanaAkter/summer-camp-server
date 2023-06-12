@@ -184,6 +184,16 @@ async function run() {
       res.send(result);
     });
 
+    app.get("/classes/:email", async (req, res) => {
+      //console.log(req.params.id);
+      const result = await classCollection
+        .find({
+          email: req.params.email,
+        })
+        .toArray();
+      res.send(result);
+    });
+
     app.post("/addclass", async (req, res) => {
       const body = req.body;
       body.createdAt = new Date();
