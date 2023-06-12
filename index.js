@@ -171,7 +171,7 @@ async function run() {
       res.send(result);
     });
     
-    app.post('/classes', async (req, res) => {
+    app.post('/classes',verifyJWT , async (req, res) => {
       const newItem = req.body;
       const result = await classCollection.insertOne(newItem)
       res.send(result);
@@ -203,7 +203,7 @@ async function run() {
       res.send(result);
     });
 
-    app.get("/instructors", async (req, res) => {
+    app.get("/instructors",verifyJWT, async (req, res) => {
       const result = await instructorCollection
         .find({})
         // .sort({ createdAt: -1 })
